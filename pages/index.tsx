@@ -2,10 +2,88 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import { useState } from 'react'
+import TodoComponent from './components/TodoComponent'
 
 const inter = Inter({ subsets: ['latin'] })
 
+interface Todos {
+  name: string,
+  done: boolean
+}
+
+const todos: Todos[] = [
+  {
+    name: 'todo1',
+    done: false
+  },
+  {
+    name: 'todo2',
+    done: false
+  },
+  {
+    name: 'todo3',
+    done: false
+  },
+  {
+    name: 'todo4',
+    done: false
+  },
+  {
+    name: 'todo5',
+    done: false
+  },
+  {
+    name: 'todo6',
+    done: false
+  },
+  {
+    name: 'todo7',
+    done: false
+  },
+  {
+    name: 'todo8',
+    done: false
+  },
+  {
+    name: 'todo9',
+    done: false
+  },
+  {
+    name: 'todo10',
+    done: false
+  },
+  {
+    name: 'todo11',
+    done: false
+  }
+]
+
 export default function Home() {
+  const [todoArray, setTodoArray] = useState<Todos[]>([])
+  const [todoName, setTodoName] = useState<string>('')
+
+  const checkIfTodoAlreadyExists = (todoName: string) => {
+    if (todoArray.some((todo) => todo.name === todoName)) {
+      return true
+    }
+    return false
+  }
+
+  const addTodoInArray = (todoName: string) => {
+    console.log(checkIfTodoAlreadyExists(todoName), 'aqui')
+    if (checkIfTodoAlreadyExists(todoName)) {
+      return alert('Essa pedência já foi criada!')
+    };
+    let temporaryArray = todoArray.slice()
+    temporaryArray.push({
+      name: todoName,
+      done: false
+    })
+    console.log(temporaryArray)
+    setTodoArray(temporaryArray)
+  }
+
   return (
     <>
       <Head>
@@ -19,8 +97,8 @@ export default function Home() {
           <div className={styles.todoListInputContainer}>
             <a>Todo List</a>
             <div>
-              <input placeholder='Digite uma pendência'/>
-              <button>Adicionar</button>
+              <input placeholder='Digite uma pendência' onChange={(e) => setTodoName(e.target.value)}/>
+              <button onClick={() => addTodoInArray(todoName)}>Adicionar</button>
             </div>
           </div>
           <div className={styles.todoListFunctionsButtons}>
@@ -29,10 +107,11 @@ export default function Home() {
             <button>Para fazer</button>
           </div>
           <div className={styles.todoListTotalContainer}>
-            <div className={styles.todoListContainer}>
-              <input type="checkbox" />
-              <a>examplename</a>
-            </div>
+            {todoArray.map((todos) => {
+              return (
+                <TodoComponent key={todos.name} todos={todos} />
+              )
+            })}
           </div>
         </div>
       </div>
