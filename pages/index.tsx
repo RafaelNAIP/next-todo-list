@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TodoComponent from './components/TodoComponent'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -62,6 +62,7 @@ const todos: Todos[] = [
 export default function Home() {
   const [todoArray, setTodoArray] = useState<Todos[]>([])
   const [todoName, setTodoName] = useState<string>('')
+  const [selectedFilter, setSelectedFilter] = useState<string>('all')
 
   const checkIfTodoAlreadyExists = (todoName: string) => {
     if (todoArray.some((todo) => todo.name === todoName)) {
@@ -81,8 +82,12 @@ export default function Home() {
       done: false
     })
     console.log(temporaryArray)
-    setTodoArray(temporaryArray)
+    setTodoArray(temporaryArray) 
   }
+
+  useEffect(() => {
+    setTodoArray(todoArray)
+  }, [selectedFilter, todoArray])
 
   return (
     <>
@@ -102,14 +107,15 @@ export default function Home() {
             </div>
           </div>
           <div className={styles.todoListFunctionsButtons}>
-            <button>Todos</button>
-            <button>Completas</button>
-            <button>Para fazer</button>
+            <button style={{ background: selectedFilter === 'all' ? 'grey' : '#3b5998', color: selectedFilter === 'all' ? '#000000' : '#FFFFFF' }} onClick={() => setSelectedFilter('all')}>Todos</button>
+            <button style={{ background: selectedFilter === 'completed' ? 'grey' : '#3b5998', color: selectedFilter === 'completed' ? '#000000' : '#FFFFFF' }} onClick={() => setSelectedFilter('completed')}>Completas</button>
+            <button style={{ background: selectedFilter === 'todo' ? 'grey' : '#3b5998', color: selectedFilter === 'todo' ? '#000000' : '#FFFFFF' }} onClick={() => setSelectedFilter('todo')}>Para fazer</button>
           </div>
           <div className={styles.todoListTotalContainer}>
-            {todoArray.map((todos) => {
+            {
+            todoArray.filter(todo => selectedFilter === 'all' ? {} : selectedFilter === 'completed' ? todo.done === true : todo.done === false).map((todos, index) => {
               return (
-                <TodoComponent key={todos.name} todos={todos} />
+                <TodoComponent key={todos.name} todos={todos} todoArray={todoArray} setTodoArray={setTodoArray} index={index} />
               )
             })}
           </div>
